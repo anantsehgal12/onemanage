@@ -1,31 +1,18 @@
 'use client'
 
-import { useOrganizationList } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs"
+import { redirect } from "next/navigation"
 
 export default function Page(){
-  const { isLoaded, setActive, userMemberships } = useOrganizationList({
-    userMemberships: {
-      infinite: true, // Useful for users with many organizations
-    },
-  });
+  
+  const {isSignedIn} = useUser()
 
-  if (!isLoaded) return null;
+  if(isSignedIn)(
+    redirect("/dashboard")
+  )
 
-  return (
-    <div>
-      {userMemberships.data?.map((mem) => (
-        <button 
-          key={mem.organization.id} 
-          onClick={() => setActive({ organization: mem.organization.id })}
-        >
-          {mem.organization.name}
-        </button>
-      ))}
-      
-      {/* Optional: Add button to switch to Personal Account */}
-      <button onClick={() => setActive({ organization: null })}>
-        Personal Account
-      </button>
-    </div>
-  );
+  if(!isSignedIn)(
+    redirect("/user/login")
+  )
+
 };
